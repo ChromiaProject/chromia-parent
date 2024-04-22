@@ -1,1 +1,1 @@
-/assign_reviewer @eugene.tykulov @mikael.ogren.cw @mikael.staldal.cw @robert_wideberg @chr.jsv
+/assign_reviewer @eugene.tykulov @mikael.staldal.cw @robert_wideberg @chr.jsv @andrei.ursu1 @johan.nilsson
