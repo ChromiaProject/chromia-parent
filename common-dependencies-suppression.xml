@@ -26,4 +26,13 @@
         ]]></notes>
         <cve>CVE-2023-4586</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive. CVE-2020-29582 was fixed in Kotlin 1.4.21. The NVD CPE matching incorrectly
+        flags kotlin-stdlib 2.0.0+. The vulnerability concerned insecure use of java.io.tmpdir in
+        kotlin.io.path extension functions on Windows.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib@.*$</packageUrl>
+        <cve>CVE-2020-29582</cve>
+    </suppress>
 </suppressions>
