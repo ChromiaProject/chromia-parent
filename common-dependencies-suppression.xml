@@ -35,4 +35,24 @@
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/.*@.*$</packageUrl>
         <cve>CVE-2020-29582</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive. CVE-2026-33186 affects gRPC-Go (the Go language implementation), not gRPC-Java.
+        The CVE's vulnerable CPE is cpe:2.3:a:grpc:grpc:*:*:*:*:*:go:*:* (target_sw=go) and the GHSA
+        tracker GHSA-p77j-4mvh-x3m3 lists the affected ecosystem as Go modules. OWASP Dependency-Check
+        matches it against io.grpc:grpc-* (Java) only because the CPE name "grpc:grpc" is shared
+        between the two implementations.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.grpc/.*@.*$</packageUrl>
+        <cve>CVE-2026-33186</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CPE confusion: io.grpc:grpc-protobuf is the gRPC-Java protobuf integration module,
+        not Google's protobuf project. The cpe:/a:protobuf:protobuf identifier is incorrectly
+        matched here.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.grpc/grpc-protobuf@.*$</packageUrl>
+        <cpe>cpe:/a:protobuf:protobuf</cpe>
+    </suppress>
 </suppressions>
