@@ -47,6 +47,24 @@ deploy:
       -Drevision=$CI_COMMIT_TAG
       clean deploy
 
+# Publish a signed release to Maven Central. Triggered manually on a semver tag.
+# Requires these GitLab CI/CD variables (masked + protected):
+#   MAVEN_GPG_KEY        - ASCII-armored GPG private signing key
+#   MAVEN_GPG_PASSPHRASE - passphrase for that key
+#   CENTRAL_USERNAME     - Central Portal user token name
+#   CENTRAL_PASSWORD     - Central Portal user token password
+deploy-central:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/
+      when: manual
+  script:
+    - mvn
+      $MAVEN_CLI_OPTS
+      --activate-profiles central
+      -Drevision=$CI_COMMIT_TAG
+      clean deploy
+
 variables:
   # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
   # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.

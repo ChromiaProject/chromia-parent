@@ -12,5 +12,10 @@
         </httpHeaders>
       </configuration>
     </server>
+    <server>
+      <id>central</id>
+      <username>${env.CENTRAL_USERNAME}</username>
+      <password>${env.CENTRAL_PASSWORD}</password>
+    </server>
   </servers>
 </settings>
