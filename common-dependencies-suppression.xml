@@ -55,4 +55,17 @@
         <packageUrl regex="true">^pkg:maven/io\.grpc/grpc-protobuf@.*$</packageUrl>
         <cpe>cpe:/a:protobuf:protobuf</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive. CVE-2026-42582 is an unbounded-allocation DoS in the HTTP/3 QPACK
+        decoder (io.netty:netty-codec-http3, QpackDecoder#decodeHuffmanEncodedLiteral), fixed
+        in 4.2.13.Final. The netty-codec-http3 artifact only exists in the 4.2.x line, so the
+        Netty 4.1.x artifacts flagged by OWASP (netty-codec-memcache, netty-codec-mqtt,
+        netty-transport, etc., pulled in transitively via netty-all) are not the vulnerable
+        component. They are matched only on the shared cpe:2.3:a:netty:netty CPE. There is no
+        4.1.x release that addresses this CVE.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/.*@4\.1\..*$</packageUrl>
+        <cve>CVE-2026-42582</cve>
+    </suppress>
 </suppressions>
