@@ -80,4 +80,17 @@
         <packageUrl regex="true">^pkg:maven/io\.netty/netty-codec-http@4\.1\.(13[3-9]|1[4-9][0-9]|[2-9][0-9][0-9])(\..*)?$</packageUrl>
         <cve>CVE-2026-42587</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive. CVE-2026-40984 is a DoS in Micrometer's HTTP server instrumentations
+        (unbounded URI-tag cardinality). Per the Spring advisory
+        (https://spring.io/security/cve-2026-40984/) the affected branches are 1.9.0-1.9.17,
+        1.13.0-1.13.18, 1.14.0-1.14.15, 1.15.0-1.15.11 and 1.16.0-1.16.5 — the 1.10.x-1.12.x line
+        is NOT affected. micrometer-core 1.10.1 (pinned fleet-wide via postchain) is flagged only
+        because NVD's CPE range over-matches. This suppression is scoped to 1.10.x-1.12.x only, so a
+        future bump into a genuinely affected branch is still reported.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer-core@1\.1[0-2]\..*$</packageUrl>
+        <cve>CVE-2026-40984</cve>
+    </suppress>
 </suppressions>
