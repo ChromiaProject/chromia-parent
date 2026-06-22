@@ -93,4 +93,15 @@
         <packageUrl regex="true">^pkg:maven/io\.micrometer/micrometer-core@1\.1[0-2]\..*$</packageUrl>
         <cve>CVE-2026-40984</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2026-54515 (CVSS 6.9). jackson-databind 2.22.0 is the latest released version and
+        still matches; the rest of the jackson-databind 2026 cluster (CVE-2026-54512/54513/54514/
+        54516/54517/54518) is already fixed in 2.22.0. No fixed release is available yet, so this
+        is suppressed fleet-wide until one ships. jackson is pinned in postchain and inherited by
+        all consumers via the postchain BOM. Remove once a patched jackson-databind is released.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2026-54515</cve>
+    </suppress>
 </suppressions>
