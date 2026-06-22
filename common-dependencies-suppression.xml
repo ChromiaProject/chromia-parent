@@ -95,11 +95,15 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-        CVE-2026-54515 (CVSS 6.9). jackson-databind 2.22.0 is the latest released version and
-        still matches; the rest of the jackson-databind 2026 cluster (CVE-2026-54512/54513/54514/
-        54516/54517/54518) is already fixed in 2.22.0. No fixed release is available yet, so this
-        is suppressed fleet-wide until one ships. jackson is pinned in postchain and inherited by
-        all consumers via the postchain BOM. Remove once a patched jackson-databind is released.
+        CVE-2026-54515 (CVSS 6.9): case-insensitive deserialization can bypass per-property
+        @JsonIgnoreProperties. Not exploitable in our stack: it requires
+        MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES to be enabled AND @JsonIgnoreProperties
+        to be used as an ignore boundary on untrusted input. postchain (which pins jackson and
+        propagates it to all consumers via its BOM) enables neither, and does not invoke the
+        jackson API on untrusted input at all (the REST API uses Gson + GTV binary).
+        jackson-databind 2.22.0 is also the latest release and already fixes the rest of the 2026
+        cluster (CVE-2026-54512/54513/54514/54516/54517/54518); only this one still matches and
+        no fixed release exists yet. Remove once a patched jackson-databind ships.
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
         <cve>CVE-2026-54515</cve>
