@@ -108,4 +108,18 @@
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
         <cve>CVE-2026-54515</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive for our runtime artifacts. CVE-2026-53914 (CWE-502, CVSS 9.8) is an unsafe
+        deserialization of untrusted Kotlin *build-cache metadata*, exploitable only at build time
+        when an attacker can write malicious entries into a shared/network-accessible build cache.
+        It is not reachable from the shipped kotlin-stdlib runtime jar; OWASP matches it solely on
+        the cpe:/a:jetbrains:kotlin CPE. We build with Maven (no shared Kotlin/Gradle build cache),
+        so the vulnerable code path is never exercised. The fix is Kotlin 2.4.20; this suppression
+        also covers the transitive kotlin-stdlib-common 1.8.x jars (pulled by other libraries) that
+        a kotlin.version bump would not address. Remove once the fleet is on Kotlin 2.4.20+.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/.*@.*$</packageUrl>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
 </suppressions>
