@@ -122,4 +122,29 @@
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/.*@.*$</packageUrl>
         <cve>CVE-2026-53914</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive for a TEST-ONLY tool. docker-java-transport-zerodep (pulled transitively by
+        Testcontainers, test scope) is a "zerodep" fat-jar that SHADES its own copy of Apache
+        httpcore5 5.3.x. OWASP flags the embedded META-INF/maven pom, but this shaded copy is never
+        on any runtime/shipped classpath - it is only used by Testcontainers to talk to the Docker
+        daemon during integration tests. The real httpcore5 on our compile classpath is upgraded to
+        5.4.3 separately (per-repo dependencyManagement). Scoped by filePath to the
+        docker-java-transport-zerodep jar so it never masks a genuinely vulnerable standalone
+        httpcore5. Remove once docker-java shades httpcore5 >= 5.4.3.
+        CVE-2026-54399 / CVE-2026-54428 are DoS via excessive HTTP headers in httpcore5 <= 5.4.2.
+        ]]></notes>
+        <filePath regex="true">.*docker-java-transport-zerodep-.*\.jar.*</filePath>
+        <cve>CVE-2026-54399</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        See the CVE-2026-54399 suppression above - same shaded httpcore5 inside the test-only
+        docker-java-transport-zerodep fat-jar (Testcontainers). CVE-2026-54428 is the httpcore5-h2
+        variant of the same excessive-headers DoS. Scoped by filePath so real httpcore5-h2 is still
+        reported. Remove once docker-java shades httpcore5 >= 5.4.3.
+        ]]></notes>
+        <filePath regex="true">.*docker-java-transport-zerodep-.*\.jar.*</filePath>
+        <cve>CVE-2026-54428</cve>
+    </suppress>
 </suppressions>
