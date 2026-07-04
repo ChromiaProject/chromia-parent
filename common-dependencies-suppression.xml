@@ -122,4 +122,36 @@
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/.*@.*$</packageUrl>
         <cve>CVE-2026-53914</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Not exploitable in our usage. docker-java-transport-zerodep is a "zerodep" fat-jar that
+        SHADES its own copy of Apache httpcore5 5.3.6 (via httpclient5 5.5.1); OWASP flags the
+        embedded META-INF/maven pom. postchain-base depends on it (compile scope) as the transport
+        for its Docker client, used to manage subnode containers - i.e. it only ever speaks HTTP to
+        the LOCAL, trusted Docker daemon over a unix socket. CVE-2026-54399 / CVE-2026-54428 are a
+        DoS via a peer sending an excessive number/length of HTTP headers (httpcore5 <= 5.4.2); that
+        peer here is the Docker daemon, not untrusted input, so the header-DoS is not reachable.
+        The version cannot be overridden because it is shaded inside the fat-jar, and no
+        docker-java release yet ships a fixed shaded httpcore5 (latest 3.7.1 still bundles 5.3.6).
+        This is fleet-wide (postchain-base is inherited by every consumer), hence the common file
+        rather than a per-repo suppression. Both matchers below are scoped so a real, standalone
+        vulnerable httpcore5 is still reported. Remove once docker-java shades httpcore5 >= 5.4.3.
+        ]]></notes>
+        <filePath regex="true">.*docker-java-transport-zerodep-.*\.jar.*</filePath>
+        <cve>CVE-2026-54399</cve>
+        <cve>CVE-2026-54428</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Fallback matcher for the docker-java-transport-zerodep shaded httpcore5 (see the filePath
+        suppression above) in case OWASP reports the bundled dependency by packageUrl rather than by
+        the containing jar's path. Scoped to the exact shaded version 5.3.6 (httpcore5 and
+        httpcore5-h2) so it can NOT mask a real, standalone httpcore5 (our real one is 5.4.3 via
+        httpclient5 5.6.2; nothing else pulls a standalone 5.3.6). Remove together with the filePath
+        rule once docker-java shades httpcore5 >= 5.4.3.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents\.core5/httpcore5(-h2)?@5\.3\.6$</packageUrl>
+        <cve>CVE-2026-54399</cve>
+        <cve>CVE-2026-54428</cve>
+    </suppress>
 </suppressions>
