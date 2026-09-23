@@ -154,4 +154,38 @@
         <cve>CVE-2026-54399</cve>
         <cve>CVE-2026-54428</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Not exploitable in our usage, and not fixable by a version bump. Same jar and same
+        reasoning as the httpcore5 suppressions above: docker-java-transport-zerodep is a fat-jar
+        that SHADES httpclient5 5.5.1 (1357 relocated Apache HC classes under
+        com/github/dockerjava/), so the version cannot be overridden from our poms, and docker-java
+        3.7.1 - the latest release - still bundles 5.5.1. postchain-base uses it only as the
+        transport for its Docker client, managing subnode containers, so it only ever speaks HTTP
+        to the LOCAL, trusted Docker daemon over a unix socket.
+        CVE-2026-64607 is a connection leak on a Content-Encoding decode error leading to pool
+        exhaustion; the responding peer here is the Docker daemon, not untrusted input.
+        CVE-2026-71290 is improper TLS hostname verification in the ASYNC HttpClient
+        (HostnameVerificationPolicy#BUILTIN having no effect); that connection carries no TLS at
+        all, and the classic client is unaffected upstream regardless.
+        Our real, standalone httpclient5 is 5.6.4, which patches both. Both matchers below are
+        scoped so a genuinely vulnerable standalone httpclient5 is still reported.
+        Remove once docker-java shades httpclient5 >= 5.6.4.
+        ]]></notes>
+        <filePath regex="true">.*docker-java-transport-zerodep-.*\.jar.*</filePath>
+        <cve>CVE-2026-64607</cve>
+        <cve>CVE-2026-71290</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Fallback matcher for the docker-java-transport-zerodep shaded httpclient5 (see the filePath
+        suppression above) in case OWASP reports the bundled dependency by packageUrl rather than by
+        the containing jar's path. Scoped to the exact shaded version 5.5.1 so it can NOT mask a
+        real, standalone httpclient5 - ours is 5.6.4, and nothing else pulls a standalone 5.5.1.
+        Remove together with the filePath rule once docker-java shades httpclient5 >= 5.6.4.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents\.client5/httpclient5@5\.5\.1$</packageUrl>
+        <cve>CVE-2026-64607</cve>
+        <cve>CVE-2026-71290</cve>
+    </suppress>
 </suppressions>
