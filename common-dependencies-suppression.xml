@@ -188,4 +188,57 @@
         <cve>CVE-2026-64607</cve>
         <cve>CVE-2026-71290</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        False positive. CVE-2026-40542 affects httpclient5 >= 5.6-alpha1, < 5.6.1 and is fixed in
+        5.6.1. docker-java-transport-zerodep is a fat-jar that SHADES httpclient5 5.5.1, which is
+        below the affected range; OWASP matches it only on the coarse
+        cpe:2.3:a:apache:httpclient:5.5.1. Our real, standalone httpclient5 is 5.6.4.
+
+        Safe to suppress because the flagged version is not affected at all: the defect is in
+        SCRAM-SHA-256 mutual authentication, which was introduced in the 5.6 alpha line and does
+        not exist in 5.5.1. This is a version-matching artefact, not an accepted risk.
+
+        Remove once docker-java shades httpclient5 >= 5.6.1.
+        ]]></notes>
+        <filePath regex="true">.*docker-java-transport-zerodep-.*\.jar.*</filePath>
+        <cve>CVE-2026-40542</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Fallback matcher for the docker-java-transport-zerodep shaded httpclient5 (see the filePath
+        suppression above) in case OWASP reports the bundled dependency by packageUrl rather than by
+        the containing jar's path. Scoped to the exact shaded version 5.5.1 so it can NOT mask a
+        real, standalone httpclient5. Remove together with the filePath rule.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents\.client5/httpclient5@5\.5\.1$</packageUrl>
+        <cve>CVE-2026-40542</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Not fixable by a version bump. CVE-2026-14683 and CVE-2026-14686 are reported against
+        HdrHistogram "up to 2.2.2", and 2.2.2 is the latest release on Maven Central, so no fixed
+        version exists. Both are disputed by NVD on the grounds that no security boundary is
+        crossed, and both are scored ~2 with a local attack vector that already requires
+        privileges on the host.
+
+        Safe to suppress because neither is exploitable here:
+        - CVE-2026-14683 is in AbstractHistogram.decodeFromCompressedByteBuffer, which
+          deserializes a histogram encoded elsewhere. HdrHistogram reaches us only as a runtime
+          transitive of micrometer-core, whose sole consumer class
+          (TimeWindowPercentileHistogram) never calls that method, and we do not use HdrHistogram
+          directly. The code is present but unreachable.
+        - CVE-2026-14686 is in DoubleHistogram.recordValue, which IS reached via
+          TimeWindowPercentileHistogram -> DoubleRecorder.recordValue when client-side percentiles
+          are enabled. The defect is an incorrect range comparison, so the worst outcome is a
+          value recorded into the wrong bucket, i.e. an inaccurate latency percentile. The values
+          recorded are our own timing measurements, not untrusted input.
+
+        Scoped to 2.2.2 exactly, so a later release is reported again. Remove once a fixed
+        HdrHistogram is published.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.hdrhistogram/HdrHistogram@2\.2\.2$</packageUrl>
+        <cve>CVE-2026-14683</cve>
+        <cve>CVE-2026-14686</cve>
+    </suppress>
 </suppressions>
