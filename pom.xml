@@ -34,6 +34,15 @@
                             <manifest>
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             </manifest>
+                            <!-- Artifact provenance: record the exact source state a jar was built from.
+                                 Values come from git-commit-id-maven-plugin, whose revision goal is bound for
+                                 every child in the build/plugins section below. Only commit-derived values
+                                 are used, so rebuilding the same commit yields a byte-identical manifest. -->
+                            <manifestEntries>
+                                <SCM-Revision>${git.commit.id.full}</SCM-Revision>
+                                <SCM-Dirty>${git.dirty}</SCM-Dirty>
+                                <Build-Time>${git.commit.time}</Build-Time>
+                            </manifestEntries>
                         </archive>
                     </configuration>
                 </plugin>
@@ -109,9 +118,9 @@
                     <version>3.5.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <version>4.9.10</version>
+                    <groupId>io.github.git-commit-id</groupId>
+                    <artifactId>git-commit-id-maven-plugin</artifactId>
+                    <version>9.2.0</version>
                     <configuration>
                         <useNativeGit>true</useNativeGit> <!-- git worktree does not work with JGit implementation -->
                         <includeOnlyProperties>
@@ -144,6 +153,24 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!-- Runs in every child so artifacts carry provenance without each repo having to
+                 remember. Configuration (version, exposed properties, commit id mode) comes from
+                 pluginManagement above. Deliberately no failOnNoGitDirectory or
+                 failOnUnableToExtractRepoInfo escape hatches: a build without git should fail
+                 loudly rather than quietly publish an artifact with an empty SCM-Revision. -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
