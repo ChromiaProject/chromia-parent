@@ -241,4 +241,25 @@
         <cve>CVE-2026-14683</cve>
         <cve>CVE-2026-14686</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Not fixable by a version bump. CVE-2026-92877 (XXE in JAXB unmarshalling) is fixed upstream
+        in jaxb-ri (PR #2013) but not released yet; 4.0.9 is the latest release on Maven Central.
+
+        Safe to suppress because it is not exploitable here:
+        - The flaw only applies to JAXP implementations where FEATURE_SECURE_PROCESSING alone does
+          not block external entity resolution. We run on the JDK's built-in parser, which does
+          block it (verified on JDK 21 with jaxb 4.0.1: external entity rejected by the
+          accessExternalDTD restriction). No third-party XML parser (Xerces, Woodstox, Saxon) is
+          on the classpath.
+        - JAXB reaches us through postchain-gtv, which unmarshals GtvML blockchain configurations.
+          That XML comes from local files given to the CLI tools, bundled resources, or the
+          authenticated postchain-server admin API; no public endpoint accepts GtvML.
+
+        Scoped to jaxb 4.0.0-4.0.9, so a later release is reported again. Remove once a fixed jaxb
+        is published.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/(com\.sun\.xml\.bind|org\.glassfish\.jaxb)/jaxb-(core|impl|runtime)@4\.0\.[0-9]$</packageUrl>
+        <cve>CVE-2026-92877</cve>
+    </suppress>
 </suppressions>
