@@ -142,7 +142,9 @@
                     <version>12.2.2</version>
                     <configuration>
                         <prettyPrint>true</prettyPrint>
-                        <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                        <!-- Fail only on High and Critical (CVSS >= 7.0), the same bar as container scanning (grype fails on high).
+                             Lower findings still appear in the report. -->
+                        <failBuildOnCVSS>7</failBuildOnCVSS>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
                         <suppressionFiles>
                             <suppressionFile>https://gitlab.com/chromaway/chromia-parent/-/raw/dev/common-dependencies-suppression.xml?ref_type=heads</suppressionFile>
