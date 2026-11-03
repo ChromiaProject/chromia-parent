@@ -262,4 +262,19 @@
         <packageUrl regex="true">^pkg:maven/(com\.sun\.xml\.bind|org\.glassfish\.jaxb)/jaxb-(core|impl|runtime)@4\.0\.[0-9]$</packageUrl>
         <cve>CVE-2026-92877</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        CVE-2026-118042 (GHSA-v5x9-67m3-7m56): HashBiMap and LinkedHashMultimap build in quadratic
+        time when filled with keys that share a hashCode. Guava rates it low; the score that fails
+        the build comes from OSS Index. Fixed in 33.8.0-jre.
+
+        Safe to suppress until the next regular postchain bump: none of our projects use HashBiMap
+        or LinkedHashMultimap (postchain uses only HashMultimap, which is not affected), and the
+        worst outcome is CPU slowdown, not code execution or data exposure.
+
+        Scoped to 33.7.2-jre exactly. Remove once postchain moves to guava 33.8.0 or later.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@33\.7\.2-jre$</packageUrl>
+        <cve>CVE-2026-118042</cve>
+    </suppress>
 </suppressions>
